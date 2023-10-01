@@ -10,7 +10,7 @@ Help me out chrome extension is an extension for screen recording.
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone [https://link-to-project](https://github.com/d-a-ve/helpmeoutcrx)
 ```
 
 Go to the project directory
