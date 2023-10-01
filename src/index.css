@@ -1,0 +1,66 @@
+/* google fonts */
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* FONT SIZES */
+
+    /* HEADINGS */
+    --h1-fs: clamp(3.6875rem, 2.8068rem + 4.4034vw, 5.625rem);
+    --h2-fs: clamp(2.8125rem, 2.2727rem + 2.6989vw, 4rem);
+    --h3-fs: clamp(2rem, 1.6307rem + 1.8466vw, 2.8125rem);
+    --h4-fs: clamp(1.5rem, 1.2727rem + 1.1364vw, 2rem);
+    --h5-fs: clamp(1.25rem, 1.1364rem + 0.5682vw, 1.5rem);
+    --h6-fs: clamp(1rem, 0.9432rem + 0.2841vw, 1.125rem);
+
+    /* SUBHEADINGS */
+    --sub-h1-fs: clamp(1.25rem, 1.1364rem + 0.5682vw, 1.5rem);
+    --sub-h2-fs: clamp(1rem, 0.9432rem + 0.2841vw, 1.125rem);
+    --sub-h3-fs: clamp(0.6875rem, 0.6307rem + 0.2841vw, 0.8125rem);
+
+    /* BODY */
+    --body-3-fs: clamp(0.875rem, 0.8182rem + 0.2841vw, 1rem);
+  }
+	body {
+		font-family: "Work Sans", sans-serif;
+    font-size: clamp(1rem, 0.9432rem + 0.2841vw, 1.125rem);
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: "Sora", sans-serif;
+    font-weight: 700;
+	}
+
+  h1 {
+    font-size: var(--h1-fs);
+  }
+
+  h2 {
+    font-size: var(--h2-fs)
+  }
+
+  h3 {
+    font-size: var(--h3-fs)
+  }
+
+  h4 {
+    font-size: var(--h4-fs)
+  }
+
+  h5 {
+    font-size: var(--h5-fs)
+  }
+
+  h6 {
+    font-size: var(--h6-fs)
+  }
+}
