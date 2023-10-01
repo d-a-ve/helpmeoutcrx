@@ -9,52 +9,74 @@ document.body.append(shadow);
 // using var because when the chrome browser injects this on every toolbar, it will reassign it and this will cause an error
 var recorder: MediaRecorder | null = null;
 
+// create websockets connection
+
 const onAccessApproved = (stream: MediaStream) => {
-	recorder = new MediaRecorder(stream);
+	let ws = new WebSocket("ws://martdev.tech:3000");
 
-	recorder.start(); // collect 100ms of data blob
+	console.log("I have instantiated the ws connection")
+	ws.onopen = () => {
+		console.log("Web Sockets connection started!");
+		recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
-	// show the recording controls
-	recordingControls();
+		recorder.start(5000); // collect 100ms of data blob
 
-	// a listener to stop the recording
-	recorder.onstop = () => {
-		stream.getTracks().forEach((track) => {
-			console.log(track);
-			if (track.readyState === "live") {
-				track.stop();
-			}
-		});
+		// show the recording controls
+		recordingControls();
 
-		// Here, you can add what to do once recording has stopped
-		// such as sending a post request that recording has ended so 
-		// compiling can begin
+		// a listener to stop the recording
+		recorder.onstop = () => {
+			stream.getTracks().forEach((track) => {
+				console.log(track);
+				if (track.readyState === "live") {
+					track.stop();
+				}
+			});
 
+			// Here, you can add what to do once recording has stopped
+			// such as sending a post request that recording has ended so
+			// compiling can begin
 
-		// remove the shadow dom once stopped
-		shadow.remove();
-	};
+			// remove the shadow dom once stopped
+			shadow.remove();
 
-	// do something with the recorded blob data
-	recorder.ondataavailable = async (event) => {
-		let recordedBlob = event.data;
-		console.log("Event data", event.data);
-		const blobWebM = new Blob([recordedBlob], { type: "video/webm" });
-		console.log("blob", blobWebM);
-		if (!blobWebM) return;
-
-		// this is where you put the post api call to send the blob to the backend
-		console.log("url", URL.createObjectURL(blobWebM));
-		const message = {
-			action: "redirect",
-			payload: {
-				url: URL.createObjectURL(blobWebM),
-			},
+			// close web socket connection
+			ws.close();
 		};
 
-		const backgroundMessage = await chrome.runtime.sendMessage(message);
-		console.log("backgroundMessage", backgroundMessage);
+		// do something with the recorded blob data
+		recorder.ondataavailable = async (event) => {
+			let recordedBlob = event.data;
+			console.log("Event data", event.data);
+
+			ws.send(recordedBlob);
+			console.log("data has been sent");
+			// const blobWebM = new Blob([recordedBlob], { type: "video/webm" });
+			// console.log("blob", blobWebM);
+			// if (!blobWebM) return;
+
+			// // this is where you put the post api call to send the blob to the backend
+			// console.log("url", URL.createObjectURL(blobWebM));
+			// const message = {
+			// 	action: "redirect",
+			// 	payload: {
+			// 		url: URL.createObjectURL(blobWebM),
+			// 	},
+			// };
+
+			// const backgroundMessage = await chrome.runtime.sendMessage(message);
+			// console.log("backgroundMessage", backgroundMessage);
+		};
 	};
+
+	// when BE sends a message;
+	ws.onmessage = (event) => {
+		console.log("event", event);
+	}
+
+	ws.onclose = () => {
+		console.log("Ws connection closed");
+	}
 };
 
 console.log("content scripts ran!!");
@@ -167,8 +189,6 @@ const recordScreenControlsSeparatorHTML = `
 		<div style="background-color: white; height: 40px; width: 2px; border-radius: 10px; margin-left: 16px;"></div>
 `;
 
-
-
 const recordScreenControlsHTML = `
 	<div style="margin-left: 32px; display: flex; gap: 24px; align-items: flex-start;">
 
@@ -233,11 +253,11 @@ function recordingControls() {
 
 	pausePlayBtn?.addEventListener("click", (e) => {
 		const btnImg = pausePlayBtn.querySelector("img");
-		
-		if(btnImg?.src.includes("pause")){
+
+		if (btnImg?.src.includes("pause")) {
 			btnImg.src = playIcon;
 			recorder?.pause();
-		} else if(btnImg?.src.includes("play")){
+		} else if (btnImg?.src.includes("play")) {
 			btnImg.src = pauseIcon;
 			recorder?.resume();
 		}
