@@ -60,7 +60,7 @@ const onAccessApproved = (stream: MediaStream) => {
 			// const message = {
 			// 	action: "redirect",
 			// 	payload: {
-			// 		url: URL.createObjectURL(blobWebM),
+					// url: URL.createObjectURL(blobWebM),
 			// 	},
 			// };
 
