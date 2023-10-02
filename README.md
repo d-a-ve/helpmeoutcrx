@@ -1,8 +1,13 @@
 
 # HELP ME OUT CHROME EXTENSION
 
-Help me out chrome extension is an extension for screen recording.
+Help me out chrome extension is used for screen recording.
 
+Download the files for using the extension locally here [here](https://www.dropbox.com/scl/fi/k3rv7lo73uv7gjr7v3b6v/dave-helpmeoutcrx.zip?rlkey=5yjewzb2m4l3xgqqkrhkepusq&dl=0)
+
+## Notes
+1. After downloading and loading the extension locally, you have to give the page you want to record a reload so the scripts for the extension can be added.
+1. This extension can only work for `http://` or `https://` web origins. Any page other than this such as `blob://`, `chrome://`, etc will not work.
 
 
 ## Build Extension

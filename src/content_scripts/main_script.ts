@@ -44,8 +44,16 @@ const onAccessApproved = (stream: MediaStream) => {
 			shadow.remove();
 
 			// close web socket connection
-			ws.close();
 			hasVideoEnded = true;
+			ws.close();
+			const message = {
+				action: "redirect",
+				payload: {
+					url: `https://dave-helpmeout.vercel.app/videos/${videoId}`,
+				},
+			};
+
+			chrome.runtime.sendMessage(message);
 		};
 
 		// do something with the recorded blob data
@@ -57,16 +65,6 @@ const onAccessApproved = (stream: MediaStream) => {
 			console.log("data has been sent");
 
 			// when video has ended that is when the redirect should happen
-			if (hasVideoEnded) {
-				const message = {
-					action: "redirect",
-					payload: {
-						url: `https://dave-helpmeout.vercel.app/videos/${videoId}`,
-					},
-				};
-
-				await chrome.runtime.sendMessage(message);
-			}
 		};
 	};
 
