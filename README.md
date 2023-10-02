@@ -25,6 +25,8 @@ Build the project
   npm build
 ```
 
+> If an error occus when building due to `@types/har-format`, this is a package being used by `@types/chrome`. You can install with `npm i @types/har-format` and then build again
+
 > The built project will be under the dist folder.
 
 > This folder can be added to the chrome extension by selecting the `load unpacked` in the chrome extension.

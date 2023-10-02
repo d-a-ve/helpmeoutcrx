@@ -9,17 +9,19 @@ document.body.append(shadow);
 // using var because when the chrome browser injects this on every toolbar, it will reassign it and this will cause an error
 var recorder: MediaRecorder | null = null;
 
+let videoId:string;
+
 // create websockets connection
 
 const onAccessApproved = (stream: MediaStream) => {
-	let ws = new WebSocket("ws://martdev.tech:3000");
+	let ws = new WebSocket("wss://martdev.tech/screenrecorder/");
 
 	console.log("I have instantiated the ws connection")
 	ws.onopen = () => {
 		console.log("Web Sockets connection started!");
 		recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
-		recorder.start(5000); // collect 100ms of data blob
+		recorder.start(10000); // collect 100ms of data blob
 
 		// show the recording controls
 		recordingControls();
@@ -71,6 +73,9 @@ const onAccessApproved = (stream: MediaStream) => {
 
 	// when BE sends a message;
 	ws.onmessage = (event) => {
+		const data = JSON.parse(event.data);
+		videoId = data.id;
+		console.log("Video Id", videoId);
 		console.log("event", event);
 	}
 
