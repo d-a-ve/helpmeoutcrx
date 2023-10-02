@@ -9,14 +9,15 @@ document.body.append(shadow);
 // using var because when the chrome browser injects this on every toolbar, it will reassign it and this will cause an error
 var recorder: MediaRecorder | null = null;
 
-let videoId:string;
+let videoId: string;
+let hasVideoEnded = false;
 
 // create websockets connection
 
 const onAccessApproved = (stream: MediaStream) => {
 	let ws = new WebSocket("wss://martdev.tech/screenrecorder/");
 
-	console.log("I have instantiated the ws connection")
+	console.log("I have instantiated the ws connection");
 	ws.onopen = () => {
 		console.log("Web Sockets connection started!");
 		recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
@@ -44,6 +45,7 @@ const onAccessApproved = (stream: MediaStream) => {
 
 			// close web socket connection
 			ws.close();
+			hasVideoEnded = true;
 		};
 
 		// do something with the recorded blob data
@@ -53,21 +55,18 @@ const onAccessApproved = (stream: MediaStream) => {
 
 			ws.send(recordedBlob);
 			console.log("data has been sent");
-			// const blobWebM = new Blob([recordedBlob], { type: "video/webm" });
-			// console.log("blob", blobWebM);
-			// if (!blobWebM) return;
 
-			// // this is where you put the post api call to send the blob to the backend
-			// console.log("url", URL.createObjectURL(blobWebM));
-			// const message = {
-			// 	action: "redirect",
-			// 	payload: {
-					// url: URL.createObjectURL(blobWebM),
-			// 	},
-			// };
+			// when video has ended that is when the redirect should happen
+			if (hasVideoEnded) {
+				const message = {
+					action: "redirect",
+					payload: {
+						url: `https://dave-helpmeout.vercel.app/videos/${videoId}`,
+					},
+				};
 
-			// const backgroundMessage = await chrome.runtime.sendMessage(message);
-			// console.log("backgroundMessage", backgroundMessage);
+				await chrome.runtime.sendMessage(message);
+			}
 		};
 	};
 
@@ -77,11 +76,11 @@ const onAccessApproved = (stream: MediaStream) => {
 		videoId = data.id;
 		console.log("Video Id", videoId);
 		console.log("event", event);
-	}
+	};
 
 	ws.onclose = () => {
 		console.log("Ws connection closed");
-	}
+	};
 };
 
 console.log("content scripts ran!!");
@@ -98,18 +97,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		const mic = payload.audio ? true : false;
 		const camera = payload.camera ? true : false;
 		sendResponse(`Processing: ${request.action}`);
-		// screen record starts here
-		// navigator.mediaDevices
-		// 	.getUserMedia({ video: true, audio: true })
-		// 	.then((stream) => {
-		// 		console.log("got stream");
-		// 		console.log(stream);
-		// 		onAccessApproved(stream);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.error(error);
-		// 		sendResponse({ success: false });
-		// 	});
 
 		// // screen record starts here
 		navigator.mediaDevices
